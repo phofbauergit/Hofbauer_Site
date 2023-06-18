@@ -88,14 +88,14 @@ params:
         subtitle: A look at some of my work
         title: Data Science
         url: blogs/codework
-      - image: pic03.jpg
-        subtitle: Lorem Etiam Nullam
-        title: Magna
-        url: blogs/magna
-      - image: pic04.jpg
-        subtitle: Nisl Sed Aliquam
-        title: Ipsum
-        url: blogs/ipsum
+      - image: plane.jpg
+        subtitle: my obsession with airplanes
+        title: Aviation
+        url: blogs/planes
+      - image: politics.jpg
+        subtitle: Why undertsanding foreign politics is important
+        title: Politics
+        url: blogs/politics
       - image: pic05.jpg
         subtitle: Ipsum Dolor Sit Amet
         title: Consequat

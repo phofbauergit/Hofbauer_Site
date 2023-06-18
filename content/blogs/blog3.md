@@ -3,13 +3,12 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:26:13-05:00"
-description: Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna
-  sed nunc rhoncus condimentum sem. In efficitur ligula tate urna. Maecenas massa
-  sed magna lacinia magna pellentesque lorem ipsum dolor. Nullam et orci eu lorem
-  consequat tincidunt. Vivamus et sagittis tempus.
+description: Politics
 draft: false
-image: pic08.jpg
+image: g7.jpg
 keywords: ""
-slug: tempus
-title: Tempus
+slug: politics
+title: Politics
 ---
+
+I find foreign politics highly interesting and read the news concerning this topics every day. I believe that in our globalised world it is very important to stay up to date in order to undertsand and predict what is going on. If I want to be active in global finance, I should be aware of the political risks
