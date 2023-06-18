@@ -6,7 +6,7 @@ googleAnalytics: ''
 disqusShortname: ''
 params:
   banner:
-    buttonText: Get Started
+    buttonText: A bit about me
     subtitle: |-
       Im a student at LBS taking the Data Science for Business course with Professor Christodoulou. As part of this course, we are showcasing all the wonderful work we have worked on on our personal websites for you to look at and appreciate
     title: Hi, my name is Patrick 
@@ -71,9 +71,9 @@ params:
       - name: Blogs
         url: blogs
       - name: Generic Blog
-        url: blogs/ipsum
-      - name: Elements
-        url: elements.html
+        url: blogs/ipsum ############
+ #     - name: Elements
+#        url: elements.html
     menu: Menu
     subtitle: By yours truly, Patrick
     title: Snapshot
@@ -107,13 +107,8 @@ params:
   two:
     buttonText: Get Started
     enable: yes
-    subtitle: "Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero.
-      \n    Mauris aliquet magna magna sed nunc rhoncus pharetra. \n    Pellentesque
-      condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia
-      pellentesque lorem ipsum dolor. \n    Nullam et orci eu lorem consequat tincidunt.
-      Vivamus et sagittis libero.\n    Mauris aliquet magna magna sed nunc rhoncus
-      amet pharetra et feugiat tempus."
-    title: Massa libero
+    subtitle: "Get started with life? Maybe, but we'll never know"
+    title: A new beginning
     url: blogs
     
     
