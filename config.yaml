@@ -71,7 +71,7 @@ params:
       - name: Blogs
         url: blogs
       - name: About Me
-        url: blogs/lbs
+        url: blogs/lbsx
  #     - name: Elements
 #        url: elements.html
     menu: Menu
@@ -83,7 +83,7 @@ params:
       - image: lbs.jpg
         subtitle: A little flasback
         title: My Time at LBS
-        url: blogs/lbs
+        url: blogs/lbsx
       - image: coding.jpg
         subtitle: A look at some of my work
         title: Data Science
