@@ -1,0 +1,749 @@
+
+
+<div id="mass-shootings-in-the-us" class="section level1">
+<h1>Mass shootings in the US</h1>
+<p>In July 2012, in the aftermath of a mass shooting in a movie theater in Aurora, Colorado, <a href="https://www.motherjones.com/politics/2012/07/mass-shootings-map/">Mother Jones</a> published a report on mass shootings in the United States since 1982. Importantly, they provided the underlying data set as <a href="https://www.motherjones.com/politics/2012/12/mass-shootings-mother-jones-full-data/">an open-source database</a> for anyone interested in studying and understanding this criminal behavior.</p>
+<div id="obtain-the-data" class="section level2">
+<h2>Obtain the data</h2>
+<pre><code>## Rows: 125
+## Columns: 14
+## $ case                 &lt;chr&gt; &quot;Oxford High School shooting&quot;, &quot;San Jose VTA shoo…
+## $ year                 &lt;dbl&gt; 2021, 2021, 2021, 2021, 2021, 2021, 2020, 2020, 2…
+## $ month                &lt;chr&gt; &quot;Nov&quot;, &quot;May&quot;, &quot;Apr&quot;, &quot;Mar&quot;, &quot;Mar&quot;, &quot;Mar&quot;, &quot;Mar&quot;, …
+## $ day                  &lt;dbl&gt; 30, 26, 15, 31, 22, 16, 16, 26, 10, 6, 31, 4, 3, …
+## $ location             &lt;chr&gt; &quot;Oxford, Michigan&quot;, &quot;San Jose, California&quot;, &quot;Indi…
+## $ summary              &lt;chr&gt; &quot;Ethan Crumbley, a 15-year-old student at Oxford …
+## $ fatalities           &lt;dbl&gt; 4, 9, 8, 4, 10, 8, 4, 5, 4, 3, 7, 9, 22, 3, 12, 5…
+## $ injured              &lt;dbl&gt; 7, 0, 7, 1, 0, 1, 0, 0, 3, 8, 25, 27, 26, 12, 4, …
+## $ total_victims        &lt;dbl&gt; 11, 9, 15, 5, 10, 9, 4, 5, 7, 11, 32, 36, 48, 15,…
+## $ location_type        &lt;chr&gt; &quot;School&quot;, &quot;Workplace&quot;, &quot;Workplace&quot;, &quot;Workplace&quot;, …
+## $ male                 &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, T…
+## $ age_of_shooter       &lt;dbl&gt; 15, 57, 19, NA, 21, 21, 31, 51, NA, NA, 36, 24, 2…
+## $ race                 &lt;chr&gt; NA, NA, &quot;White&quot;, NA, NA, &quot;White&quot;, NA, &quot;Black&quot;, &quot;B…
+## $ prior_mental_illness &lt;chr&gt; NA, &quot;Yes&quot;, &quot;Yes&quot;, NA, &quot;Yes&quot;, NA, NA, NA, NA, NA, …</code></pre>
+<pre><code>## # A tibble: 125 × 14
+##    case       year month   day location summary fatalities injured total_victims
+##    &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;        &lt;dbl&gt;   &lt;dbl&gt;         &lt;dbl&gt;
+##  1 Oxford H…  2021 Nov      30 Oxford,… &quot;Ethan…          4       7            11
+##  2 San Jose…  2021 May      26 San Jos… &quot;Samue…          9       0             9
+##  3 FedEx wa…  2021 Apr      15 Indiana… &quot;Brand…          8       7            15
+##  4 Orange o…  2021 Mar      31 Orange,… &quot;Amina…          4       1             5
+##  5 Boulder …  2021 Mar      22 Boulder… &quot;Ahmad…         10       0            10
+##  6 Atlanta …  2021 Mar      16 Atlanta… &quot;Rober…          8       1             9
+##  7 Springfi…  2020 Mar      16 Springf… &quot;Joaqu…          4       0             4
+##  8 Molson C…  2020 Feb      26 Milwauk… &quot;Antho…          5       0             5
+##  9 Jersey C…  2019 Dec      10 Jersey … &quot;David…          4       3             7
+## 10 Pensacol…  2019 Dec       6 Pensaco… &quot;Ahmed…          3       8            11
+## # ℹ 115 more rows
+## # ℹ 5 more variables: location_type &lt;chr&gt;, male &lt;lgl&gt;, age_of_shooter &lt;dbl&gt;,
+## #   race &lt;chr&gt;, prior_mental_illness &lt;chr&gt;</code></pre>
+<table>
+<colgroup>
+<col width="36%" />
+<col width="63%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>column(variable)</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>case</td>
+<td>short name of incident</td>
+</tr>
+<tr class="even">
+<td>year, month, day</td>
+<td>year, month, day in which the shooting occurred</td>
+</tr>
+<tr class="odd">
+<td>location</td>
+<td>city and state where the shooting occcurred</td>
+</tr>
+<tr class="even">
+<td>summary</td>
+<td>brief description of the incident</td>
+</tr>
+<tr class="odd">
+<td>fatalities</td>
+<td>Number of fatalities in the incident, excluding the shooter</td>
+</tr>
+<tr class="even">
+<td>injured</td>
+<td>Number of injured, non-fatal victims in the incident, excluding the shooter</td>
+</tr>
+<tr class="odd">
+<td>total_victims</td>
+<td>number of total victims in the incident, excluding the shooter</td>
+</tr>
+<tr class="even">
+<td>location_type</td>
+<td>generic location in which the shooting took place</td>
+</tr>
+<tr class="odd">
+<td>male</td>
+<td>logical value, indicating whether the shooter was male</td>
+</tr>
+<tr class="even">
+<td>age_of_shooter</td>
+<td>age of the shooter when the incident occured</td>
+</tr>
+<tr class="odd">
+<td>race</td>
+<td>race of the shooter</td>
+</tr>
+<tr class="even">
+<td>prior_mental_illness</td>
+<td>did the shooter show evidence of mental illness prior to the incident?</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="explore-the-data" class="section level2">
+<h2>Explore the data</h2>
+<div id="specific-questions" class="section level3">
+<h3>Specific questions</h3>
+<ul>
+<li>Generate a data frame that summarizes the number of mass shootings per year.</li>
+</ul>
+<pre class="r"><code>shootings_per_year &lt;- mass_shootings %&gt;% 
+  
+  group_by(year) %&gt;% #grouping for summary calculations
+  
+  summarise(shootings_per_year = n())
+
+shootings_per_year</code></pre>
+<pre><code>## # A tibble: 37 × 2
+##     year shootings_per_year
+##    &lt;dbl&gt;              &lt;int&gt;
+##  1  1982                  1
+##  2  1984                  2
+##  3  1986                  1
+##  4  1987                  1
+##  5  1988                  1
+##  6  1989                  2
+##  7  1990                  1
+##  8  1991                  3
+##  9  1992                  2
+## 10  1993                  4
+## # ℹ 27 more rows</code></pre>
+<p>The amount of mass shootings per year has increased over the years, with 2018 having the most amount of mass shootings at 12.</p>
+<ul>
+<li>Generate a bar chart that identifies the number of mass shooters associated with each race category. The bars should be sorted from highest to lowest and each bar should show its number.</li>
+</ul>
+<pre class="r"><code>#transforming the data before plotting
+shootings_per_race &lt;- mass_shootings %&gt;% 
+  
+  group_by(race)  %&gt;% 
+  
+  mutate(race_new = ifelse(is.na(race),&quot;Unknown&quot;,race)) %&gt;% #Replacing NA with a String for the reorder
+  
+  mutate(race_count = n()) #counting for the reorder
+
+
+#plotting the data in a barchart
+ggplot(shootings_per_race, aes(x = reorder(race_new,-race_count))) +
+  
+  geom_bar() +
+  
+  geom_text(stat = &quot;count&quot;, aes(label = after_stat(count)), vjust = -1) + #adding number counts 
+
+  labs(title= &quot;Number of Mass Shootings per Race&quot;, subtitle = &quot;between 1982 and 2021 in the US&quot;, x= &quot;Race&quot;, y = &quot;Count&quot;) </code></pre>
+<p><img src="/blogs/homework2%20copy_files/figure-html/unnamed-chunk-4-1.png" width="648" style="display: block; margin: auto;" /></p>
+<ul>
+<li>Generate a boxplot visualizing the number of total victims, by type of location.</li>
+</ul>
+<pre class="r"><code>ggplot(mass_shootings, aes(location_type,total_victims)) +
+  
+  geom_boxplot() +
+  
+  labs(title = &quot;Boxplot of Total Victims by Location Type&quot;,x= &quot;Location Type&quot;,y= &quot;Total Victims per Shooting&quot;)</code></pre>
+<p><img src="/blogs/homework2%20copy_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" /></p>
+<ul>
+<li>Redraw the same plot, but remove the Las Vegas Strip massacre from the dataset.</li>
+</ul>
+<pre class="r"><code>#filtering out Las Vegas Massacre
+victims_per_location_no_LAS &lt;- mass_shootings %&gt;% 
+  filter(!case == &quot;Las Vegas Strip massacre&quot;) %&gt;%  
+  group_by(location_type) # %&gt;% summarise(victims = sum(total_victims))
+
+
+#plotting data out
+ggplot(victims_per_location_no_LAS, aes(location_type,total_victims)) +
+  
+  geom_boxplot() +
+  
+  labs(title = &quot;Boxplot of Total Victims by Location Type&quot;,subtitle= &quot;without Las Vegas Strip Massacre&quot;,x= &quot;Location Type&quot;,y= &quot;Total Victims per Shooting&quot;)</code></pre>
+<p><img src="/blogs/homework2%20copy_files/figure-html/unnamed-chunk-6-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="more-open-ended-questions" class="section level3">
+<h3>More open-ended questions</h3>
+<p>Address the following questions. Generate appropriate figures/tables to support your conclusions.</p>
+<ul>
+<li>How many white males with prior signs of mental illness initiated a mass shooting after 2000?</li>
+</ul>
+<pre class="r"><code>#filter for selected cases
+white_male_2000up_ill &lt;- mass_shootings %&gt;% 
+  
+  filter(race == &quot;White&quot;,male == &quot;TRUE&quot;,year &gt;= 2000,prior_mental_illness == &quot;Yes&quot;)
+
+#count rows with with skim
+skim(white_male_2000up_ill)</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-7">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">white_male_2000up_ill</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">23</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">14</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">7</td>
+</tr>
+<tr class="odd">
+<td align="left">logical</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">numeric</td>
+<td align="left">6</td>
+</tr>
+<tr class="odd">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table style="width:100%;">
+<colgroup>
+<col width="26%" />
+<col width="12%" />
+<col width="17%" />
+<col width="5%" />
+<col width="5%" />
+<col width="7%" />
+<col width="11%" />
+<col width="13%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">case</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">15</td>
+<td align="right">45</td>
+<td align="right">0</td>
+<td align="right">23</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">month</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">12</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">location</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">13</td>
+<td align="right">25</td>
+<td align="right">0</td>
+<td align="right">23</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">summary</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">83</td>
+<td align="right">908</td>
+<td align="right">0</td>
+<td align="right">23</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">location_type</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">race</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">prior_mental_illness</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: logical</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="left">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">male</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">TRU: 23</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<colgroup>
+<col width="17%" />
+<col width="11%" />
+<col width="15%" />
+<col width="9%" />
+<col width="6%" />
+<col width="5%" />
+<col width="7%" />
+<col width="5%" />
+<col width="7%" />
+<col width="5%" />
+<col width="6%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">year</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2011.91</td>
+<td align="right">5.62</td>
+<td align="right">2000</td>
+<td align="right">2008.5</td>
+<td align="right">2012</td>
+<td align="right">2017.0</td>
+<td align="right">2021</td>
+<td align="left">▃▃▇▂▇</td>
+</tr>
+<tr class="even">
+<td align="left">day</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">15.65</td>
+<td align="right">8.19</td>
+<td align="right">5</td>
+<td align="right">8.0</td>
+<td align="right">14</td>
+<td align="right">22.5</td>
+<td align="right">31</td>
+<td align="left">▇▇▂▃▅</td>
+</tr>
+<tr class="odd">
+<td align="left">fatalities</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8.83</td>
+<td align="right">6.24</td>
+<td align="right">3</td>
+<td align="right">6.0</td>
+<td align="right">7</td>
+<td align="right">8.0</td>
+<td align="right">27</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">injured</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9.87</td>
+<td align="right">15.07</td>
+<td align="right">0</td>
+<td align="right">1.5</td>
+<td align="right">4</td>
+<td align="right">13.0</td>
+<td align="right">70</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">total_victims</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">18.70</td>
+<td align="right">17.51</td>
+<td align="right">3</td>
+<td align="right">8.5</td>
+<td align="right">12</td>
+<td align="right">22.5</td>
+<td align="right">82</td>
+<td align="left">▇▃▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">age_of_shooter</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">30.96</td>
+<td align="right">10.14</td>
+<td align="right">19</td>
+<td align="right">22.0</td>
+<td align="right">27</td>
+<td align="right">41.0</td>
+<td align="right">48</td>
+<td align="left">▇▃▂▃▃</td>
+</tr>
+</tbody>
+</table>
+<p>From the skim we can see that the new dataframe contains 23 rows and therefore 23 white males with prior signs of mental illness initiated a mass shooting after 2000.</p>
+<ul>
+<li>Which month of the year has the most mass shootings? Generate a bar chart sorted in chronological (natural) order (Jan-Feb-Mar- etc) to provide evidence of your answer.</li>
+</ul>
+<pre class="r"><code>#changing the factor levels of the data
+shootings_per_month &lt;- mass_shootings %&gt;% 
+  
+  group_by(month) %&gt;% 
+  
+  mutate(month = factor(month, levels = c(&quot;Jan&quot;,&quot;Feb&quot;,&quot;Mar&quot;,&quot;Apr&quot;,&quot;May&quot;,&quot;Jun&quot;,&quot;Jul&quot;,&quot;Aug&quot;,&quot;Sep&quot;,&quot;Oct&quot;,&quot;Nov&quot;,&quot;Dec&quot;))) #setting factor levels for the correct order
+
+shootings_per_month</code></pre>
+<pre><code>## # A tibble: 125 × 14
+## # Groups:   month [12]
+##    case       year month   day location summary fatalities injured total_victims
+##    &lt;chr&gt;     &lt;dbl&gt; &lt;fct&gt; &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;        &lt;dbl&gt;   &lt;dbl&gt;         &lt;dbl&gt;
+##  1 Oxford H…  2021 Nov      30 Oxford,… &quot;Ethan…          4       7            11
+##  2 San Jose…  2021 May      26 San Jos… &quot;Samue…          9       0             9
+##  3 FedEx wa…  2021 Apr      15 Indiana… &quot;Brand…          8       7            15
+##  4 Orange o…  2021 Mar      31 Orange,… &quot;Amina…          4       1             5
+##  5 Boulder …  2021 Mar      22 Boulder… &quot;Ahmad…         10       0            10
+##  6 Atlanta …  2021 Mar      16 Atlanta… &quot;Rober…          8       1             9
+##  7 Springfi…  2020 Mar      16 Springf… &quot;Joaqu…          4       0             4
+##  8 Molson C…  2020 Feb      26 Milwauk… &quot;Antho…          5       0             5
+##  9 Jersey C…  2019 Dec      10 Jersey … &quot;David…          4       3             7
+## 10 Pensacol…  2019 Dec       6 Pensaco… &quot;Ahmed…          3       8            11
+## # ℹ 115 more rows
+## # ℹ 5 more variables: location_type &lt;chr&gt;, male &lt;lgl&gt;, age_of_shooter &lt;dbl&gt;,
+## #   race &lt;chr&gt;, prior_mental_illness &lt;chr&gt;</code></pre>
+<pre class="r"><code>#plotting the data
+ggplot(shootings_per_month, aes(month)) +
+  
+  geom_bar() +
+  
+  labs(title= &quot;Mass Shootings per Month&quot;, subtitle = &quot;Sum of occurences between 1982 and 2021 in the US&quot;, x = NULL, y= &quot;Count&quot;)</code></pre>
+<p><img src="/blogs/homework2%20copy_files/figure-html/unnamed-chunk-8-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>As we can see in the graph, February seems to have the most mass shootings over the years.</p>
+<ul>
+<li>How does the distribution of mass shooting fatalities differ between White and Black shooters? What about White and Latino shooters?</li>
+</ul>
+<pre class="r"><code>#filtering and plotting for black/white distribution
+shootings_white_black &lt;- mass_shootings %&gt;% 
+  
+  filter(race %in% c(&quot;White&quot;,&quot;Black&quot;), !case ==&quot;Las Vegas Strip massacre&quot;) #ignoring the LVS Massacre
+
+ggplot(shootings_white_black, aes(race,fatalities)) +
+  
+  geom_violin() +
+  
+  labs(title = &quot;Violin Distribution of Fatalities in Mass Shootings&quot;,subtitle = &quot;Comparison of Black and White Shooters&quot;,x= NULL, y= &quot;Fatalities&quot;)</code></pre>
+<p><img src="/blogs/homework2%20copy_files/figure-html/unnamed-chunk-9-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#filtering and plotting for latino/white distribution
+shootings_white_latino &lt;- mass_shootings %&gt;% 
+  
+  filter(race %in% c(&quot;White&quot;,&quot;Latino&quot;), !case ==&quot;Las Vegas Strip massacre&quot;) #ignoring the LVS Massacre
+
+ggplot(shootings_white_latino, aes(race,fatalities)) +
+  
+  geom_violin() +
+  
+  labs(title = &quot;Violin Distribution of Fatalities in Mass Shootings&quot;,subtitle = &quot;Comparison of Latino and White Shooters&quot;,x= NULL, y= &quot;Fatalities&quot;)</code></pre>
+<p><img src="/blogs/homework2%20copy_files/figure-html/unnamed-chunk-10-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>Both Black and Latino shooters caused primarily low fatalities in shootings, while White shooters caused much higher fatalities per shootings and less low fatalities in comparison.
+### Very open-ended</p>
+<ul>
+<li>Are mass shootings with shooters suffering from mental illness different from mass shootings with no signs of mental illness in the shooter?</li>
+</ul>
+<pre class="r"><code>#counting total shootings by mental illness
+illness_count &lt;- mass_shootings %&gt;%  
+  
+  group_by(prior_mental_illness) %&gt;% 
+  
+  summarise(count = n())
+
+illness_count #17 62</code></pre>
+<pre><code>## # A tibble: 3 × 2
+##   prior_mental_illness count
+##   &lt;chr&gt;                &lt;int&gt;
+## 1 No                      17
+## 2 Yes                     62
+## 3 &lt;NA&gt;                    46</code></pre>
+<pre class="r"><code>#assessing the race shares of shooters by mental illness
+illness_by_race &lt;- mass_shootings %&gt;% 
+  
+  mutate(race_new = ifelse(is.na(race),&quot;Unknown&quot;,race)) %&gt;%
+  
+  group_by(prior_mental_illness,race_new) %&gt;% 
+  
+  summarise(count = n(), .groups = &quot;drop_last&quot;) %&gt;% 
+  
+  mutate(total_of_group = case_when((prior_mental_illness == &quot;No&quot;)~ 17, (prior_mental_illness == &quot;Yes&quot;)~ 62 )) %&gt;% #adding total shootings by mental illness 
+  
+  mutate(share_in_group_total = count/total_of_group) %&gt;% #calculating share
+  
+  filter(!total_of_group == is.na(total_of_group)) #dropping unknowns
+  
+
+#plotting the calculated data
+ggplot(illness_by_race, aes(race_new,share_in_group_total)) +
+  
+  geom_col() +
+  
+  facet_wrap(~prior_mental_illness, ncol = 2 ) +
+  
+  scale_x_discrete(guide = guide_axis(n.dodge=2)) +
+  
+  labs(title = &quot;Share of Shooter Race in Mass Shootings&quot;,subtitle = &quot;in relation to previous mental illness&quot;,x= NULL, y= &quot;Share in Group&quot;) +
+  
+  scale_y_continuous(labels=scales::percent_format())</code></pre>
+<p><img src="/blogs/homework2%20copy_files/figure-html/unnamed-chunk-11-1.png" width="648" style="display: block; margin: auto;" /></p>
+<ol style="list-style-type: lower-alpha">
+<li>Relationship between race and mental illness: White shooters have a higher share group totals when showing signs of mental illness. Only Asians and Native Americans with signs of mental illness have commited mass shootings.</li>
+</ol>
+<pre class="r"><code>#assessing the share of fatalities of total victims by mentall illness
+illness_by_victim_type &lt;- mass_shootings %&gt;% 
+  
+  mutate(fatality_share = fatalities/total_victims) %&gt;% 
+  
+  select(prior_mental_illness,fatality_share) %&gt;%  
+  
+  group_by(prior_mental_illness)
+
+
+#quick stats
+skim(illness_by_victim_type)</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-12">Table 2: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">illness_by_victim_type</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">125</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">numeric</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Group variables</td>
+<td align="left">prior_mental_illness</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<colgroup>
+<col width="14%" />
+<col width="20%" />
+<col width="9%" />
+<col width="13%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="left">prior_mental_illness</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">fatality_share</td>
+<td align="left">No</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.65</td>
+<td align="right">0.21</td>
+<td align="right">0.29</td>
+<td align="right">0.55</td>
+<td align="right">0.71</td>
+<td align="right">0.78</td>
+<td align="right">1</td>
+<td align="left">▃▅▁▇▂</td>
+</tr>
+<tr class="even">
+<td align="left">fatality_share</td>
+<td align="left">Yes</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.62</td>
+<td align="right">0.26</td>
+<td align="right">0.14</td>
+<td align="right">0.44</td>
+<td align="right">0.61</td>
+<td align="right">0.86</td>
+<td align="right">1</td>
+<td align="left">▃▅▇▅▇</td>
+</tr>
+<tr class="odd">
+<td align="left">fatality_share</td>
+<td align="left">NA</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.64</td>
+<td align="right">0.28</td>
+<td align="right">0.10</td>
+<td align="right">0.41</td>
+<td align="right">0.71</td>
+<td align="right">0.88</td>
+<td align="right">1</td>
+<td align="left">▃▃▃▆▇</td>
+</tr>
+</tbody>
+</table>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Relationship between victim type and mental illness: From the skim we can see that shooters with mental illness have on average a slightly lower fatality rate in total victims but the standard distribution is larger and therefore the fatality rate is more volatile</li>
+</ol>
+<ul>
+<li>Assess the relationship between mental illness and total victims, mental illness and location type, and the intersection of all three variables.</li>
+</ul>
+<pre class="r"><code>#Plotting the relationship between mental illness and total victims
+ggplot(victims_per_location_no_LAS, aes(prior_mental_illness, total_victims) ) +
+  
+  geom_boxplot() +
+  
+  labs(title = &quot;Distribution of Total Victims by Existing Mental Illness&quot;,subtitle = &quot;in American mass shootings&quot;,x = &quot;Prior Mental Illness&quot;, y = &quot;Total Victims&quot;)</code></pre>
+<p><img src="/blogs/homework2%20copy_files/figure-html/unnamed-chunk-13-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>For the analysis we will disregard the unknowns for mental illness</p>
+<ol style="list-style-type: lower-alpha">
+<li>Shooters with mental illness hit on average more victims than mentally sound shooters. They also have higher maximums and outliers</li>
+</ol>
+<pre class="r"><code>#Plotting the relationship between mental illness and location type
+ggplot(mass_shootings, aes(prior_mental_illness)) +
+  
+  geom_bar() +
+  
+  facet_grid(~location_type) +
+  
+  labs(title = &quot;Relationship of Mental Illness and Location Type&quot;, subtitle = &quot;in American mass shootings&quot;, x = &quot;Prior Mental Illness&quot;, y = &quot;Frequency&quot;)</code></pre>
+<p><img src="/blogs/homework2%20copy_files/figure-html/unnamed-chunk-14-1.png" width="648" style="display: block; margin: auto;" /></p>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Mentally sound shooters do not seem to target Airports, Military or Religious targets. Mentally ill shooters have more shootings in every single location type</li>
+</ol>
+<pre class="r"><code>#Plotting the relationship between all three variables via facet_grid
+ggplot(victims_per_location_no_LAS, aes(prior_mental_illness, total_victims) ) +
+  
+  geom_boxplot() +
+  
+  facet_grid(~location_type) +
+  
+  labs(title = &quot;Relationship of Mental Illness and Total Vcitms&quot;, subtitle = &quot;in American mass shootings by location Type&quot;, x = &quot;Prior Mental Illness&quot;, y = &quot;Total Victims&quot;)</code></pre>
+<p><img src="/blogs/homework2%20copy_files/figure-html/unnamed-chunk-15-1.png" width="648" style="display: block; margin: auto;" /></p>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>The number of total victims is on average higher for every location type where shooters had a mental illness. Especially for school the victim distribution differs significantly</li>
+</ol>
+</div>
+</div>
+</div>

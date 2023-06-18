@@ -8,7 +8,7 @@ params:
   banner:
     buttonText: A bit about me
     subtitle: |-
-      Im a student at LBS taking the Data Science for Business course with Professor Christodoulou. As part of this course, we are showcasing all the wonderful work we have worked on on our personal websites for you to look at and appreciate
+      I'm a student at LBS taking the Data Science for Business course with Professor Christodoulou. As part of this course, we are showcasing all the wonderful work we have worked on on our personal websites for you to look at and appreciate
     title: Hi, my name is Patrick 
   blog: {}
   contact:
@@ -80,14 +80,14 @@ params:
   tiles:
     enable: yes
     showcase:
-      - image: pic01.jpg
-        subtitle: Ipsum Dolor Sit Amet
-        title: Aliquam
-        url: blogs/aliquam
-      - image: pic02.jpg
-        subtitle: Feugiat Amet Tempus
-        title: Tempus
-        url: blogs/tempus
+      - image: lbs.jpg
+        subtitle: A little flasback
+        title: My Time at LBS
+        url: blogs/lbs_look
+      - image: coding.jpg
+        subtitle: A look at some of my work
+        title: Data Science
+        url: blogs/codework
       - image: pic03.jpg
         subtitle: Lorem Etiam Nullam
         title: Magna

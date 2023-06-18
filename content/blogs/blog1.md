@@ -2,27 +2,19 @@
 categories:
 - ""
 - ""
-date: "2017-10-31T21:28:43-05:00"
+date: "2023-06-18T21:28:43-05:00"
 description: ""
 draft: false
-image: pic10.jpg
+image: study.jpg
 keywords: ""
-slug: risk_return
-title: Ipsum
+slug: lbs_look
+title: My Year at LBS
 ---
 
-# My life
+# A flashback
 
-I have a strong educational background in economics and finance. I completed a Bachelor's degree in Economics from Universidad del Pacifico, where I excelled in courses such as Postgraduate Math, Portfolio Management, and Econometrics. Following that, I pursued a BSc degree in Economics and Finance from the University of London, with academic direction from the London School of Economics, and achieved First Class Honours. During my studies, I focused on courses such as Mathematical Economics, Quantitative Finance, and Asset Pricing.
+Over the past year I have been studying at London Business School as part of the Master in Financial Analysis to master Finance and enter the industry with a strong skillset that will help me be as successful as I want to be.
 
-In 2020, I had the opportunity to participate in the XIII Summer Program in Advanced Finance at the Central Bank of Peru (BCRP) and ranked 1st among 29 students. This program provided me with valuable knowledge in areas such as stochastic calculus, interest rate structures, and portfolio management.
+The diversity of subjects was very fulfilling and I learned so much. I'm so grateful that I am one of only 210 students, who got accepted this year. I worked hard during my undergrad to get here and the joy I felt when I got my acceptance letter was amazing.
 
-I gained practical business experience at the Central Bank of Peru (BCRP) as a Money Market Trader. In this role, I managed a substantial portfolio and outperformed the benchmark. I conducted backtesting of various trading strategies, collaborated on projects to develop nowcasting for macroeconomic aggregates, and wrote market and strategy reports. Additionally, I worked at Dorado Investments as an Investment Intern, where I developed a trading model and designed reporting systems. I also interned at Apoyo Consultoria, where I worked on projects related to transport company income extrapolation and pharmaceutical market analysis.
-
-Apart from my professional experience, I have engaged in various additional activities. I participated in a Kaggle contest, achieving a 77% accuracy rate in forecasting the surviving probability of the Titanic disaster using different machine learning techniques. I am an investing enthusiast and have backtested mean-reverting strategies in G10 FX. I manage my personal portfolio with a focus on fixed income.
-
-Furthermore, I have been involved in various academic and extracurricular activities. I am a CFA Level 3 Candidate, and I have passed the CFA Level 2 exam with a strong performance in Equity and Fixed Income. I have been a member of the Finance and Investing Club at London Business School and participated in the Varsity Pitch Competition. I have also served as a teacher assistant in Mathematics and CFA 1 Preparation courses at Universidad del Pacifico.
-
-In terms of personal interests, I enjoy cooking, gaming, and playing chess. These activities provide me with relaxation and a creative outlet outside of my professional pursuits.
-
-I hope this provides you with a comprehensive summary of my academic achievements, professional experience, and personal interests. Thank you for considering my application.
+Without sounding cheesy, one of my favorite was the Data Analytics course in my first semester. Many of my fellow student stsruggled hard with R, but I had loads of fun and really appreciated the teaching of Professor Christodoulou. This experience was what convinced me to select Data Science for Business as one of my electives in my third semester. It is a natural continuation of the previous course and once again I really enjoyed all the exercises, even though I struggled with some parts from time to time. In the end it is pretty rewarding and the reason why I'm able to write this blogpost for you today.

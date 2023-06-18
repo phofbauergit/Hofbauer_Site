@@ -1,0 +1,335 @@
+---
+categories:  
+- ""    #the front matter should be like the one found in, e.g., blog2.md. It cannot be like the normal Rmd we used
+- ""
+date: "2023-05-15"
+description: A snapshot of my work in R # the title that will show up once someone gets to this page
+draft: false
+image: mass_shootings.jpg # save picture in \static\img\blogs. Acceptable formats= jpg, jpeg, or png . Your iPhone pics wont work
+
+keywords: ""
+slug: codework 
+title: A snapshot of my work in R
+---
+
+```{r, setup, echo=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+```{r}
+#| label: load-libraries
+#| echo: false # This option disables the printing of code (only output is displayed).
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(wbstats)
+library(skimr)
+library(countrycode)
+library(here)
+library(ggrepel)
+library(patchwork)
+options(dyplr.summarise.inform = FALSE)
+```
+
+# Mass shootings in the US
+
+In July 2012, in the aftermath of a mass shooting in a movie theater in Aurora, Colorado, [Mother Jones](https://www.motherjones.com/politics/2012/07/mass-shootings-map/) published a report on mass shootings in the United States since 1982. Importantly, they provided the underlying data set as [an open-source database](https://www.motherjones.com/politics/2012/12/mass-shootings-mother-jones-full-data/) for anyone interested in studying and understanding this criminal behavior.
+
+## Obtain the data
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+
+mass_shootings <- read_csv(here::here("data", "mass_shootings.csv"))
+
+glimpse(mass_shootings)
+
+mass_shootings
+```
+
+| column(variable)     | description                                                                 |
+|--------------------------|----------------------------------------------|
+| case                 | short name of incident                                                      |
+| year, month, day     | year, month, day in which the shooting occurred                             |
+| location             | city and state where the shooting occcurred                                 |
+| summary              | brief description of the incident                                           |
+| fatalities           | Number of fatalities in the incident, excluding the shooter                 |
+| injured              | Number of injured, non-fatal victims in the incident, excluding the shooter |
+| total_victims        | number of total victims in the incident, excluding the shooter              |
+| location_type        | generic location in which the shooting took place                           |
+| male                 | logical value, indicating whether the shooter was male                      |
+| age_of_shooter       | age of the shooter when the incident occured                                |
+| race                 | race of the shooter                                                         |
+| prior_mental_illness | did the shooter show evidence of mental illness prior to the incident?      |
+
+## Explore the data
+
+### Specific questions
+
+-   Generate a data frame that summarizes the number of mass shootings per year.
+
+```{r}
+shootings_per_year <- mass_shootings %>% 
+  
+  group_by(year) %>% #grouping for summary calculations
+  
+  summarise(shootings_per_year = n())
+
+shootings_per_year
+```
+The amount of mass shootings per year has increased over the years, with 2018 having the most amount of mass shootings at 12.
+
+-   Generate a bar chart that identifies the number of mass shooters associated with each race category. The bars should be sorted from highest to lowest and each bar should show its number.
+
+```{r}
+
+#transforming the data before plotting
+shootings_per_race <- mass_shootings %>% 
+  
+  group_by(race)  %>% 
+  
+  mutate(race_new = ifelse(is.na(race),"Unknown",race)) %>% #Replacing NA with a String for the reorder
+  
+  mutate(race_count = n()) #counting for the reorder
+
+
+#plotting the data in a barchart
+ggplot(shootings_per_race, aes(x = reorder(race_new,-race_count))) +
+  
+  geom_bar() +
+  
+  geom_text(stat = "count", aes(label = after_stat(count)), vjust = -1) + #adding number counts 
+
+  labs(title= "Number of Mass Shootings per Race", subtitle = "between 1982 and 2021 in the US", x= "Race", y = "Count") 
+```
+
+-   Generate a boxplot visualizing the number of total victims, by type of location.
+
+```{r}
+
+ggplot(mass_shootings, aes(location_type,total_victims)) +
+  
+  geom_boxplot() +
+  
+  labs(title = "Boxplot of Total Victims by Location Type",x= "Location Type",y= "Total Victims per Shooting")
+```
+
+-   Redraw the same plot, but remove the Las Vegas Strip massacre from the dataset.
+
+```{r}
+#filtering out Las Vegas Massacre
+victims_per_location_no_LAS <- mass_shootings %>% 
+  filter(!case == "Las Vegas Strip massacre") %>%  
+  group_by(location_type) # %>% summarise(victims = sum(total_victims))
+
+
+#plotting data out
+ggplot(victims_per_location_no_LAS, aes(location_type,total_victims)) +
+  
+  geom_boxplot() +
+  
+  labs(title = "Boxplot of Total Victims by Location Type",subtitle= "without Las Vegas Strip Massacre",x= "Location Type",y= "Total Victims per Shooting")
+
+
+```
+
+### More open-ended questions
+
+Address the following questions. Generate appropriate figures/tables to support your conclusions.
+
+-   How many white males with prior signs of mental illness initiated a mass shooting after 2000?
+
+```{r}
+#filter for selected cases
+white_male_2000up_ill <- mass_shootings %>% 
+  
+  filter(race == "White",male == "TRUE",year >= 2000,prior_mental_illness == "Yes")
+
+#count rows with with skim
+skim(white_male_2000up_ill)
+```
+From the skim we can see that the new dataframe contains 23 rows and therefore 23 white males with prior signs of mental illness initiated a mass shooting after 2000.
+
+-   Which month of the year has the most mass shootings? Generate a bar chart sorted in chronological (natural) order (Jan-Feb-Mar- etc) to provide evidence of your answer.
+
+```{r}
+#changing the factor levels of the data
+shootings_per_month <- mass_shootings %>% 
+  
+  group_by(month) %>% 
+  
+  mutate(month = factor(month, levels = c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))) #setting factor levels for the correct order
+
+shootings_per_month
+
+
+#plotting the data
+ggplot(shootings_per_month, aes(month)) +
+  
+  geom_bar() +
+  
+  labs(title= "Mass Shootings per Month", subtitle = "Sum of occurences between 1982 and 2021 in the US", x = NULL, y= "Count")
+```
+
+As we can see in the graph, February seems to have the most mass shootings over the years.
+
+-   How does the distribution of mass shooting fatalities differ between White and Black shooters? What about White and Latino shooters?
+
+```{r}
+#filtering and plotting for black/white distribution
+shootings_white_black <- mass_shootings %>% 
+  
+  filter(race %in% c("White","Black"), !case =="Las Vegas Strip massacre") #ignoring the LVS Massacre
+
+ggplot(shootings_white_black, aes(race,fatalities)) +
+  
+  geom_violin() +
+  
+  labs(title = "Violin Distribution of Fatalities in Mass Shootings",subtitle = "Comparison of Black and White Shooters",x= NULL, y= "Fatalities")
+```
+
+
+
+```{r}
+#filtering and plotting for latino/white distribution
+shootings_white_latino <- mass_shootings %>% 
+  
+  filter(race %in% c("White","Latino"), !case =="Las Vegas Strip massacre") #ignoring the LVS Massacre
+
+ggplot(shootings_white_latino, aes(race,fatalities)) +
+  
+  geom_violin() +
+  
+  labs(title = "Violin Distribution of Fatalities in Mass Shootings",subtitle = "Comparison of Latino and White Shooters",x= NULL, y= "Fatalities")
+```
+
+Both Black and Latino shooters caused primarily low fatalities in shootings, while White shooters caused much higher fatalities per shootings and less low fatalities in comparison.
+### Very open-ended
+
+-   Are mass shootings with shooters suffering from mental illness different from mass shootings with no signs of mental illness in the shooter?
+
+```{r}
+#counting total shootings by mental illness
+illness_count <- mass_shootings %>%  
+  
+  group_by(prior_mental_illness) %>% 
+  
+  summarise(count = n())
+
+illness_count #17 62
+
+#assessing the race shares of shooters by mental illness
+illness_by_race <- mass_shootings %>% 
+  
+  mutate(race_new = ifelse(is.na(race),"Unknown",race)) %>%
+  
+  group_by(prior_mental_illness,race_new) %>% 
+  
+  summarise(count = n(), .groups = "drop_last") %>% 
+  
+  mutate(total_of_group = case_when((prior_mental_illness == "No")~ 17, (prior_mental_illness == "Yes")~ 62 )) %>% #adding total shootings by mental illness 
+  
+  mutate(share_in_group_total = count/total_of_group) %>% #calculating share
+  
+  filter(!total_of_group == is.na(total_of_group)) #dropping unknowns
+  
+
+#plotting the calculated data
+ggplot(illness_by_race, aes(race_new,share_in_group_total)) +
+  
+  geom_col() +
+  
+  facet_wrap(~prior_mental_illness, ncol = 2 ) +
+  
+  scale_x_discrete(guide = guide_axis(n.dodge=2)) +
+  
+  labs(title = "Share of Shooter Race in Mass Shootings",subtitle = "in relation to previous mental illness",x= NULL, y= "Share in Group") +
+  
+  scale_y_continuous(labels=scales::percent_format())
+```
+
+a) Relationship between race and mental illness: White shooters have a higher share group totals when showing signs of mental illness. Only Asians and Native Americans with signs of mental illness have commited mass shootings. 
+
+```{r}
+#assessing the share of fatalities of total victims by mentall illness
+illness_by_victim_type <- mass_shootings %>% 
+  
+  mutate(fatality_share = fatalities/total_victims) %>% 
+  
+  select(prior_mental_illness,fatality_share) %>%  
+  
+  group_by(prior_mental_illness)
+
+
+#quick stats
+skim(illness_by_victim_type)
+
+```
+
+
+b) Relationship between victim type and mental illness: From the skim we can see that shooters with mental illness have on average a slightly lower fatality rate in total victims but the standard distribution is larger and therefore the fatality rate is more volatile
+
+
+
+-   Assess the relationship between mental illness and total victims, mental illness and location type, and the intersection of all three variables.
+
+```{r}
+#Plotting the relationship between mental illness and total victims
+ggplot(victims_per_location_no_LAS, aes(prior_mental_illness, total_victims) ) +
+  
+  geom_boxplot() +
+  
+  labs(title = "Distribution of Total Victims by Existing Mental Illness",subtitle = "in American mass shootings",x = "Prior Mental Illness", y = "Total Victims")
+```
+
+For the analysis we will disregard the unknowns for mental illness
+
+a) Shooters with mental illness hit on average more victims than mentally sound shooters. They also have higher maximums and outliers
+
+```{r}
+#Plotting the relationship between mental illness and location type
+ggplot(mass_shootings, aes(prior_mental_illness)) +
+  
+  geom_bar() +
+  
+  facet_grid(~location_type) +
+  
+  labs(title = "Relationship of Mental Illness and Location Type", subtitle = "in American mass shootings", x = "Prior Mental Illness", y = "Frequency")
+```
+
+b) Mentally sound shooters do not seem to target Airports, Military or Religious targets. Mentally ill shooters have more shootings in every single location type
+
+```{r}
+#Plotting the relationship between all three variables via facet_grid
+ggplot(victims_per_location_no_LAS, aes(prior_mental_illness, total_victims) ) +
+  
+  geom_boxplot() +
+  
+  facet_grid(~location_type) +
+  
+  labs(title = "Relationship of Mental Illness and Total Vcitms", subtitle = "in American mass shootings by location Type", x = "Prior Mental Illness", y = "Total Victims")
+
+
+```
+
+c) The number of total victims is on average higher for every location type where shooters had a mental illness. Especially for school the victim distribution differs significantly
+
+
+
+
