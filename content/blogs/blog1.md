@@ -8,7 +8,7 @@ draft: false
 image: study.jpg
 keywords: ""
 slug: lbs_look
-title: My Year at LBS
+title: My Year at LBS 
 ---
 
 # A flashback
