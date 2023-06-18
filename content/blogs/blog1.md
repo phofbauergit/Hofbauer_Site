@@ -7,7 +7,7 @@ description: ""
 draft: false
 image: study.jpg
 keywords: ""
-slug: lbs_look
+slug: lbs
 title: My Year at LBS 
 ---
 
