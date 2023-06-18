@@ -96,13 +96,13 @@ params:
         subtitle: Why undertsanding foreign politics is important
         title: Politics
         url: blogs/politics
-      - image: pic05.jpg
-        subtitle: Ipsum Dolor Sit Amet
-        title: Consequat
-        url: blogs/ipsum
+      - image: music.jpg
+        subtitle: A look into my taste
+        title: Music
+        url: blogs/techno
       - image: pic06.jpg
-        subtitle: Feugiat Amet Tempus
-        title: Etiam
+        subtitle: Another snapshot into my work
+        title: Data Analytics
         url: blogs/ipsum
   two:
     buttonText: Get Started
