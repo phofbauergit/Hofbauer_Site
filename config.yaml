@@ -1,6 +1,6 @@
 baseURL: https://hofbaueroverview.netlify.app
 languageCode: en-us
-title: Forty
+title: Patrick Hofbauer's Portfolio
 theme: forty
 googleAnalytics: ''
 disqusShortname: ''
@@ -8,24 +8,23 @@ params:
   banner:
     buttonText: Get Started
     subtitle: |-
-      A RESPONSIVE SITE TEMPLATE DESIGNED BY HTML5 UP
-      AND RELEASED UNDER THE CREATIVE COMMONS.
-    title: Hi, my name is Forty
+      Im a student at LBS taking the Data Science for Business course with Professor Christodoulou. As part of this course, we are showcasing all the wonderful work we have worked on on our personal websites for you to look at and appreciate
+    title: Hi, my name is Patrick 
   blog: {}
   contact:
     address:
-      - city: City, ST 00000
-        country: Country
-        street: Street
+      - city: Frankfurt, 60325
+        country: Germany
+        street: Savignystrasse 53
         title: Address
     buttonClear: Clear
     buttonSend: Send message
     email:
-      - email: example@domain.com
+      - email: phofbauer.mfa2023@london.edu
         title: Email
     enable: yes
     phone:
-      - phone: (000) 000-0000 x1234
+      - phone: +49 174 9653544
         title: Phone
   custom_css: []
   custom_js: []
@@ -35,28 +34,28 @@ params:
     text: Please visit [this page](/)
   favicon: favicon.ico
   footer:
-    copyright: Company Name
+    copyright: Hofbauer Industries
     enable: yes
     quicklinks:
       - alt: HTML5 UP
         text: 'Design: '
         url: https://www.html5up.net
     social:
-      - icon: fa-twitter
-        label: Twitter
-        url: https://www.twitter.com
-      - icon: fa-facebook
-        label: Facebook
-        url: https://www.facebook.com
+#      - icon: fa-twitter
+#        label: Twitter
+#        url: https://www.twitter.com
+#      - icon: fa-facebook
+#        label: Facebook
+#        url: https://www.facebook.com
       - icon: fa-instagram
-        label: Instagram
-        url: https://www.instagram.com
+        label: Patrick's Insta
+        url: https://www.instagram.com/patrickhofbauer_/?hl=en
       - icon: fa-github
-        label: GitHub
-        url: https://www.github.com
+        label: Patrick's GitHub
+        url: https://github.com/phofbauergit
       - icon: fa-linkedin
-        label: LinkedIn
-        url: https://www.linkedin.com
+        label: Patrick's LinkedIn
+        url: https://de.linkedin.com/in/patricktthofbauer
   image: ''
   name: Your name
   navigation:
@@ -76,8 +75,8 @@ params:
       - name: Elements
         url: elements.html
     menu: Menu
-    subtitle: By HTML5 Up
-    title: Forty
+    subtitle: By yours truly, Patrick
+    title: Snapshot
   tiles:
     enable: yes
     showcase:
