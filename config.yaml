@@ -100,10 +100,10 @@ params:
         subtitle: A look into my taste
         title: Music
         url: blogs/techno
-      - image: pic06.jpg
+      - image: codework.jpg
         subtitle: Another snapshot into my work
         title: Data Analytics
-        url: blogs/ipsum
+        url: blogs/codework2
   two:
     buttonText: Get Started
     enable: yes

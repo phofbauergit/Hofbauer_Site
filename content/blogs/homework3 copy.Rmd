@@ -1,0 +1,316 @@
+---
+categories:  
+- ""    #the front matter should be like the one found in, e.g., blog2.md. It cannot be like the normal Rmd we used
+- ""
+date: "2023-05-15"
+description: Another snapshot of my work in R # the title that will show up once someone gets to this page
+draft: false
+image: money.jpg # save picture in \static\img\blogs. Acceptable formats= jpg, jpeg, or png . Your iPhone pics wont work
+
+keywords: ""
+slug: codework2 
+title: Another snapshot of my work in R
+---
+
+```{r, setup, echo=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+```{r}
+#| label: load-libraries
+#| echo: false # This option disables the printing of code (only output is displayed).
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(wbstats)
+library(tictoc)
+library(skimr)
+library(countrycode)
+library(here)
+library(DBI)
+library(dbplyr)
+library(arrow)
+library(rvest)
+library(robotstxt) # check if we're allowed to scrape the data
+library(scales)
+library(sf)
+library(readxl)
+library(stringr)
+library(RSelenium)
+library(janitor)
+library(ggrepel)
+```
+
+# Money in UK politics
+
+[The Westminster Accounts](https://news.sky.com/story/the-westminster-accounts-12786091), a recent collaboration between Sky News and Tortoise Media, examines the flow of money through UK politics. It does so by combining data from three key sources: 
+
+1. [Register of Members’ Financial Interests](https://www.parliament.uk/mps-lords-and-offices/standards-and-financial-interests/parliamentary-commissioner-for-standards/registers-of-interests/register-of-members-financial-interests/), 
+1. [Electoral Commission records of donations to parties](http://search.electoralcommission.org.uk/English/Search/Donations), and
+1. [Register of All-Party Parliamentary Groups](https://www.parliament.uk/mps-lords-and-offices/standards-and-financial-interests/parliamentary-commissioner-for-standards/registers-of-interests/register-of-all-party-party-parliamentary-groups/). 
+
+
+## Open a connection to the database
+
+The database made available by Simon Willison is an `SQLite` database
+
+```{r}
+sky_westminster <- DBI::dbConnect(
+  drv = RSQLite::SQLite(),
+  dbname = here::here("data", "sky-westminster-files.db")
+)
+```
+
+How many tables does the database have?
+
+```{r}
+DBI::dbListTables(sky_westminster)
+```
+
+There 7 tables in this database.
+
+## Which MP has received the most amount of money? 
+
+```{r}
+#creating the object for members
+members_db <- tbl(sky_westminster,"members")
+
+
+#This is code that I derived with help from ChatGPT in order to extract the year from the date column in payments 
+data <- dbGetQuery(sky_westminster, "SELECT * FROM payments")
+
+data$year <- str_extract(data$date, "\\d{4}")
+
+dbWriteTable(sky_westminster, "payments", data, overwrite = TRUE)
+
+
+#creating the object for payments
+payments_db <- tbl(sky_westminster,"payments") 
+
+
+
+#joining payments and members
+member_payments_db <- left_join(payments_db ,members_db %>% 
+                                  
+                                  rename(member_id = "id"), by = "member_id") %>% 
+  
+  select(name, party_id, member_id, entity, value, year) 
+
+
+
+#determining the value of donations by MP
+max_mp_payment_dp <- member_payments_db %>% 
+  
+  group_by(name) %>% 
+  
+  summarise(total_donations = sum(value, na.rm = TRUE)) %>% 
+  
+  arrange(desc(total_donations))
+
+max_mp_payment_dp
+```
+
+As we can see in the table, Theresa May received the highest amount of donations at 2,809,765.42 GBP
+
+
+## Any `entity` that accounts for more than 5% of all donations?
+
+Is there any `entity` whose donations account for more than 5% of the total payments given to MPs over the 2020-2022 interval? Who are they and who did they give money to?
+
+```{r}
+#determining entities with 5% or higher
+entity_donations <- member_payments_db %>% 
+  
+  group_by(entity) %>% 
+  
+  summarise(total_donations = sum(value,na.rm = TRUE)) %>% 
+  
+  mutate(overall_total = sum(total_donations, na.rm = TRUE)) %>% mutate(share = total_donations/overall_total) %>% 
+  
+  arrange(desc(share))
+
+entity_donations
+```
+
+
+Whiters LLP is the only entity that has more than 5% in donation share.
+
+```{r}
+#retrieving the distinct MPs that Whithers donated to
+whiters_donations <- member_payments_db %>% 
+  
+  filter(entity == "Withers LLP") %>% 
+  
+  group_by(name) %>% 
+  
+  summarise(total_donations = sum(value, na.rm = TRUE))
+
+whiters_donations
+```
+
+They donated all 1,812,732 GBP to Geoffrey Cox
+
+## Do `entity` donors give to a single party or not?
+
+- How many distinct entities who paid money to MPS are there?
+- How many (as a number and %) donated to MPs belonging to a single party only?
+
+```{r}
+#determining number of distinct entities
+member_payments_db %>% 
+  
+  group_by(entity) %>% 
+  
+  summarise(sum = n()) %>% 
+  
+  ungroup() %>% 
+  
+  summarise(entities = n())
+```
+
+There are 2213 distinct entities.
+
+```{r}
+#creating the object for the partie database
+parties_db <- tbl(sky_westminster,"parties")
+
+
+
+#joining parties with the already joined mebers and payments tables
+party_payment_db <- left_join(member_payments_db,parties_db %>% 
+                                
+                                rename(party_id = "id",Party = "name"), by = "party_id")
+
+
+
+#determining number of entities that have contributed to only one party
+party_payment_db %>% 
+  
+  group_by(entity,Party) %>% 
+  
+  summarise(donations = sum(value, na.rm = TRUE),.groups = "drop_last") %>% #simply summarising to be able to count the rows created from the grouping
+  
+  summarise(entity_party = n(),.groups = "drop_last") %>% #counting the number of contributions by entity
+  
+  filter(entity_party == 1) %>% #filtering for entities that have only contributed once (one party only)
+  
+  summarise(solo_contributors = n())
+```
+
+2036 of these entities only contributed to one party.
+
+```{r}
+#creating a dataframe manually because after left joining the two previous summaries it returns 0 when mutating for a share
+solo_entity_share <- tibble(total_entities = 2213,solo_contributors = 2036, share = 2036/2213 )        
+                                                      
+solo_entity_share
+
+
+```
+
+This is a share of 92%
+
+## Which party has raised the greatest amount of money in each of the years 2020-2022? 
+
+-  Write code that visualizes the required data according to the following table
+
+```{r echo=FALSE, out.width="80%"}
+knitr::include_graphics(here::here("/img/total_donations_table.png", "total_donations_table.png"), error = FALSE)
+```
+
+```{r}
+#pulling party donations from the database list
+party_donations_db <- tbl(sky_westminster,"party_donations") 
+
+#changing the string date into a year integer
+party_donations_db <- party_donations_db %>% 
+  
+  mutate(year = year(date)) %>% 
+  
+  select(-date,-nature_of_donation,-donation_id) #dropping unnecessary columns
+
+
+#matching party donations with party information to match for party names
+party_name_donations_db <- left_join(party_donations_db,parties_db %>% 
+                                    
+                                    rename(party_id = "id"), by = "party_id") %>% 
+  
+  select(-party_id,-abbrev,-background,-foreground,-entity) %>% #dropping unnecessary columns
+  
+  relocate(name) %>% #resorting columns according to screenshot
+  
+  relocate(year) 
+  
+  #determining party contribution by year
+donations_by_party_year_db <- party_name_donations_db %>% 
+  
+  filter(year > 2019) %>% 
+  
+  group_by(year,name) %>% 
+  
+  summarise(total_year_donations = sum(value, na.rm = TRUE),.groups = "drop_last") %>% 
+  
+  group_by(year) %>% 
+  
+  mutate(sum = sum(total_year_donations, na.rm = TRUE),prop = total_year_donations/sum) %>% #calculate yearly proportion by party
+  
+  select(-sum) #drop temporary column needed for prop calculation
+
+#removing scientific notation
+options(scipen = 999)
+  
+
+donations_by_party_year_db
+```
+
+
+- Based on the data, plot the following chart
+
+```{r echo=FALSE, out.width="80%"}
+knitr::include_graphics(here::here("images", "total_donations_graph.png"), error = FALSE)
+```
+
+
+```{r , out.width="80%"}
+#turning database into dataframe
+party_donation_df <- donations_by_party_year_db %>% 
+  
+  collect() %>% 
+  
+  filter(total_year_donations > 700000) %>% #filtering out parties with less than 700,000 in donations
+  
+  #adding factor levels according to contribution levels for graph sorting
+  mutate(Party = factor(name, levels = c("Conservative","Labour","Sinn Féin","Liberal Democrats")))
+  
+
+#plotting column chart
+ggplot(party_donation_df, aes(year,total_year_donations, fill=Party)) +
+  
+  geom_col(position = "dodge") +
+  
+  labs(title = "Conservatives have captured the majority of political donations", subtitle = "Donations above £700,000 to political parties, 2020-2022", x = NULL, y = NULL) +
+  
+  #adding GBP and comma to the y-axis
+  scale_y_continuous(labels = scales::label_dollar(prefix = "£")) 
+```
+
+Finally, when you are done working with the databse, make sure you close the connection, or disconnect from the database.
+
+```{r}
+dbDisconnect(sky_westminster)
+```
+
+

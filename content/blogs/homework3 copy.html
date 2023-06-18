@@ -1,0 +1,283 @@
+
+
+<div id="money-in-uk-politics" class="section level1">
+<h1>Money in UK politics</h1>
+<p><a href="https://news.sky.com/story/the-westminster-accounts-12786091">The Westminster Accounts</a>, a recent collaboration between Sky News and Tortoise Media, examines the flow of money through UK politics. It does so by combining data from three key sources:</p>
+<ol style="list-style-type: decimal">
+<li><a href="https://www.parliament.uk/mps-lords-and-offices/standards-and-financial-interests/parliamentary-commissioner-for-standards/registers-of-interests/register-of-members-financial-interests/">Register of Members’ Financial Interests</a>,</li>
+<li><a href="http://search.electoralcommission.org.uk/English/Search/Donations">Electoral Commission records of donations to parties</a>, and</li>
+<li><a href="https://www.parliament.uk/mps-lords-and-offices/standards-and-financial-interests/parliamentary-commissioner-for-standards/registers-of-interests/register-of-all-party-party-parliamentary-groups/">Register of All-Party Parliamentary Groups</a>.</li>
+</ol>
+<div id="open-a-connection-to-the-database" class="section level2">
+<h2>Open a connection to the database</h2>
+<p>The database made available by Simon Willison is an <code>SQLite</code> database</p>
+<pre class="r"><code>sky_westminster &lt;- DBI::dbConnect(
+  drv = RSQLite::SQLite(),
+  dbname = here::here(&quot;data&quot;, &quot;sky-westminster-files.db&quot;)
+)</code></pre>
+<p>How many tables does the database have?</p>
+<pre class="r"><code>DBI::dbListTables(sky_westminster)</code></pre>
+<pre><code>## [1] &quot;appg_donations&quot;  &quot;appgs&quot;           &quot;member_appgs&quot;    &quot;members&quot;        
+## [5] &quot;parties&quot;         &quot;party_donations&quot; &quot;payments&quot;</code></pre>
+<p>There 7 tables in this database.</p>
+</div>
+<div id="which-mp-has-received-the-most-amount-of-money" class="section level2">
+<h2>Which MP has received the most amount of money?</h2>
+<pre class="r"><code>#creating the object for members
+members_db &lt;- tbl(sky_westminster,&quot;members&quot;)
+
+
+#This is code that I derived with help from ChatGPT in order to extract the year from the date column in payments 
+data &lt;- dbGetQuery(sky_westminster, &quot;SELECT * FROM payments&quot;)
+
+data$year &lt;- str_extract(data$date, &quot;\\d{4}&quot;)
+
+dbWriteTable(sky_westminster, &quot;payments&quot;, data, overwrite = TRUE)
+
+
+#creating the object for payments
+payments_db &lt;- tbl(sky_westminster,&quot;payments&quot;) 
+
+
+
+#joining payments and members
+member_payments_db &lt;- left_join(payments_db ,members_db %&gt;% 
+                                  
+                                  rename(member_id = &quot;id&quot;), by = &quot;member_id&quot;) %&gt;% 
+  
+  select(name, party_id, member_id, entity, value, year) 
+
+
+
+#determining the value of donations by MP
+max_mp_payment_dp &lt;- member_payments_db %&gt;% 
+  
+  group_by(name) %&gt;% 
+  
+  summarise(total_donations = sum(value, na.rm = TRUE)) %&gt;% 
+  
+  arrange(desc(total_donations))
+
+max_mp_payment_dp</code></pre>
+<pre><code>## # Source:     SQL [?? x 2]
+## # Database:   sqlite 3.39.3 [/Users/patrickhofbauer/Desktop/Hofbauer_Site/data/sky-westminster-files.db]
+## # Ordered by: desc(total_donations)
+##    name             total_donations
+##    &lt;chr&gt;                      &lt;dbl&gt;
+##  1 Theresa May             2809765.
+##  2 Sir Geoffrey Cox        2191387.
+##  3 Boris Johnson           1282402 
+##  4 Keir Starmer             799936.
+##  5 Andrew Mitchell          769373.
+##  6 Fiona Bruce              712321.
+##  7 John Redwood             692438.
+##  8 Rishi Sunak              546043 
+##  9 Liz Truss                538678.
+## 10 Ed Davey                 441681.
+## # ℹ more rows</code></pre>
+<p>As we can see in the table, Theresa May received the highest amount of donations at 2,809,765.42 GBP</p>
+</div>
+<div id="any-entity-that-accounts-for-more-than-5-of-all-donations" class="section level2">
+<h2>Any <code>entity</code> that accounts for more than 5% of all donations?</h2>
+<p>Is there any <code>entity</code> whose donations account for more than 5% of the total payments given to MPs over the 2020-2022 interval? Who are they and who did they give money to?</p>
+<pre class="r"><code>#determining entities with 5% or higher
+entity_donations &lt;- member_payments_db %&gt;% 
+  
+  group_by(entity) %&gt;% 
+  
+  summarise(total_donations = sum(value,na.rm = TRUE)) %&gt;% 
+  
+  mutate(overall_total = sum(total_donations, na.rm = TRUE)) %&gt;% mutate(share = total_donations/overall_total) %&gt;% 
+  
+  arrange(desc(share))
+
+entity_donations</code></pre>
+<pre><code>## # Source:     SQL [?? x 4]
+## # Database:   sqlite 3.39.3 [/Users/patrickhofbauer/Desktop/Hofbauer_Site/data/sky-westminster-files.db]
+## # Ordered by: desc(share)
+##    entity                                total_donations overall_total   share
+##    &lt;chr&gt;                                           &lt;dbl&gt;         &lt;dbl&gt;   &lt;dbl&gt;
+##  1 Withers LLP                                  1812732.     34520598. 0.0525 
+##  2 Fiona Bruce and Co LLP                        711749.     34520598. 0.0206 
+##  3 Charles Stanley                               674821.     34520598. 0.0195 
+##  4 Unite                                         636313.     34520598. 0.0184 
+##  5 Cambridge Speaker Series                      408200      34520598. 0.0118 
+##  6 GMB Union                                     397738.     34520598. 0.0115 
+##  7 MPM Connect                                   345217      34520598. 0.0100 
+##  8 Centerview Partners LLP                       277724.     34520598. 0.00805
+##  9 Council of Insurance Agents &amp; Brokers         276130      34520598. 0.00800
+## 10 Hindustan Times                               261652.     34520598. 0.00758
+## # ℹ more rows</code></pre>
+<p>Whiters LLP is the only entity that has more than 5% in donation share.</p>
+<pre class="r"><code>#retrieving the distinct MPs that Whithers donated to
+whiters_donations &lt;- member_payments_db %&gt;% 
+  
+  filter(entity == &quot;Withers LLP&quot;) %&gt;% 
+  
+  group_by(name) %&gt;% 
+  
+  summarise(total_donations = sum(value, na.rm = TRUE))
+
+whiters_donations</code></pre>
+<pre><code>## # Source:   SQL [1 x 2]
+## # Database: sqlite 3.39.3 [/Users/patrickhofbauer/Desktop/Hofbauer_Site/data/sky-westminster-files.db]
+##   name             total_donations
+##   &lt;chr&gt;                      &lt;dbl&gt;
+## 1 Sir Geoffrey Cox        1812732.</code></pre>
+<p>They donated all 1,812,732 GBP to Geoffrey Cox</p>
+</div>
+<div id="do-entity-donors-give-to-a-single-party-or-not" class="section level2">
+<h2>Do <code>entity</code> donors give to a single party or not?</h2>
+<ul>
+<li>How many distinct entities who paid money to MPS are there?</li>
+<li>How many (as a number and %) donated to MPs belonging to a single party only?</li>
+</ul>
+<pre class="r"><code>#determining number of distinct entities
+member_payments_db %&gt;% 
+  
+  group_by(entity) %&gt;% 
+  
+  summarise(sum = n()) %&gt;% 
+  
+  ungroup() %&gt;% 
+  
+  summarise(entities = n())</code></pre>
+<pre><code>## # Source:   SQL [1 x 1]
+## # Database: sqlite 3.39.3 [/Users/patrickhofbauer/Desktop/Hofbauer_Site/data/sky-westminster-files.db]
+##   entities
+##      &lt;int&gt;
+## 1     2213</code></pre>
+<p>There are 2213 distinct entities.</p>
+<pre class="r"><code>#creating the object for the partie database
+parties_db &lt;- tbl(sky_westminster,&quot;parties&quot;)
+
+
+
+#joining parties with the already joined mebers and payments tables
+party_payment_db &lt;- left_join(member_payments_db,parties_db %&gt;% 
+                                
+                                rename(party_id = &quot;id&quot;,Party = &quot;name&quot;), by = &quot;party_id&quot;)
+
+
+
+#determining number of entities that have contributed to only one party
+party_payment_db %&gt;% 
+  
+  group_by(entity,Party) %&gt;% 
+  
+  summarise(donations = sum(value, na.rm = TRUE),.groups = &quot;drop_last&quot;) %&gt;% #simply summarising to be able to count the rows created from the grouping
+  
+  summarise(entity_party = n(),.groups = &quot;drop_last&quot;) %&gt;% #counting the number of contributions by entity
+  
+  filter(entity_party == 1) %&gt;% #filtering for entities that have only contributed once (one party only)
+  
+  summarise(solo_contributors = n())</code></pre>
+<pre><code>## # Source:   SQL [1 x 1]
+## # Database: sqlite 3.39.3 [/Users/patrickhofbauer/Desktop/Hofbauer_Site/data/sky-westminster-files.db]
+##   solo_contributors
+##               &lt;int&gt;
+## 1              2036</code></pre>
+<p>2036 of these entities only contributed to one party.</p>
+<pre class="r"><code>#creating a dataframe manually because after left joining the two previous summaries it returns 0 when mutating for a share
+solo_entity_share &lt;- tibble(total_entities = 2213,solo_contributors = 2036, share = 2036/2213 )        
+                                                      
+solo_entity_share</code></pre>
+<pre><code>## # A tibble: 1 × 3
+##   total_entities solo_contributors share
+##            &lt;dbl&gt;             &lt;dbl&gt; &lt;dbl&gt;
+## 1           2213              2036 0.920</code></pre>
+<p>This is a share of 92%</p>
+</div>
+<div id="which-party-has-raised-the-greatest-amount-of-money-in-each-of-the-years-2020-2022" class="section level2">
+<h2>Which party has raised the greatest amount of money in each of the years 2020-2022?</h2>
+<ul>
+<li>Write code that visualizes the required data according to the following table</li>
+</ul>
+<p><img src="../../../../../../img/total_donations_table.png/total_donations_table.png" width="80%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#pulling party donations from the database list
+party_donations_db &lt;- tbl(sky_westminster,&quot;party_donations&quot;) 
+
+#changing the string date into a year integer
+party_donations_db &lt;- party_donations_db %&gt;% 
+  
+  mutate(year = year(date)) %&gt;% 
+  
+  select(-date,-nature_of_donation,-donation_id) #dropping unnecessary columns
+
+
+#matching party donations with party information to match for party names
+party_name_donations_db &lt;- left_join(party_donations_db,parties_db %&gt;% 
+                                    
+                                    rename(party_id = &quot;id&quot;), by = &quot;party_id&quot;) %&gt;% 
+  
+  select(-party_id,-abbrev,-background,-foreground,-entity) %&gt;% #dropping unnecessary columns
+  
+  relocate(name) %&gt;% #resorting columns according to screenshot
+  
+  relocate(year) 
+  
+  #determining party contribution by year
+donations_by_party_year_db &lt;- party_name_donations_db %&gt;% 
+  
+  filter(year &gt; 2019) %&gt;% 
+  
+  group_by(year,name) %&gt;% 
+  
+  summarise(total_year_donations = sum(value, na.rm = TRUE),.groups = &quot;drop_last&quot;) %&gt;% 
+  
+  group_by(year) %&gt;% 
+  
+  mutate(sum = sum(total_year_donations, na.rm = TRUE),prop = total_year_donations/sum) %&gt;% #calculate yearly proportion by party
+  
+  select(-sum) #drop temporary column needed for prop calculation
+
+#removing scientific notation
+options(scipen = 999)
+  
+
+donations_by_party_year_db</code></pre>
+<pre><code>## # Source:   SQL [?? x 4]
+## # Database: sqlite 3.39.3 [/Users/patrickhofbauer/Desktop/Hofbauer_Site/data/sky-westminster-files.db]
+## # Groups:   year
+##     year name                    total_year_donations    prop
+##    &lt;int&gt; &lt;chr&gt;                                  &lt;dbl&gt;   &lt;dbl&gt;
+##  1  2020 Alliance                             105000  0.00150
+##  2  2020 Conservative                       42770782. 0.612  
+##  3  2020 Green Party                          378068  0.00541
+##  4  2020 Labour                             13539803. 0.194  
+##  5  2020 Liberal Democrats                  12717295. 0.182  
+##  6  2020 Plaid Cymru                           70000  0.00100
+##  7  2020 Scottish National Party              246284. 0.00352
+##  8  2020 Sinn Féin                            113892  0.00163
+##  9  2021 Alba Party                            53559. 0.00180
+## 10  2021 Alliance                              42500  0.00142
+## # ℹ more rows</code></pre>
+<ul>
+<li>Based on the data, plot the following chart</li>
+</ul>
+<p><img src="../../images/total_donations_graph.png" width="80%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#turning database into dataframe
+party_donation_df &lt;- donations_by_party_year_db %&gt;% 
+  
+  collect() %&gt;% 
+  
+  filter(total_year_donations &gt; 700000) %&gt;% #filtering out parties with less than 700,000 in donations
+  
+  #adding factor levels according to contribution levels for graph sorting
+  mutate(Party = factor(name, levels = c(&quot;Conservative&quot;,&quot;Labour&quot;,&quot;Sinn Féin&quot;,&quot;Liberal Democrats&quot;)))
+  
+
+#plotting column chart
+ggplot(party_donation_df, aes(year,total_year_donations, fill=Party)) +
+  
+  geom_col(position = &quot;dodge&quot;) +
+  
+  labs(title = &quot;Conservatives have captured the majority of political donations&quot;, subtitle = &quot;Donations above £700,000 to political parties, 2020-2022&quot;, x = NULL, y = NULL) +
+  
+  #adding GBP and comma to the y-axis
+  scale_y_continuous(labels = scales::label_dollar(prefix = &quot;£&quot;)) </code></pre>
+<p><img src="/blogs/homework3%20copy_files/figure-html/unnamed-chunk-13-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>Finally, when you are done working with the databse, make sure you close the connection, or disconnect from the database.</p>
+<pre class="r"><code>dbDisconnect(sky_westminster)</code></pre>
+</div>
+</div>
