@@ -3,7 +3,7 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:42:51-05:00"
-description: Music
+description: Different Genres, Different Friends
 draft: false
 image: techno.jpg
 keywords: ""

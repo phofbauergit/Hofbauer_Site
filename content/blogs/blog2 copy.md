@@ -3,12 +3,12 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:26:09-05:00"
-description: My Obsession
+description: A Flashback
 draft: false
 image: study.jpg
 keywords: ""
 slug: lbsx
-title: Aviation
+title: My Year at LBS
 ---
 
 # A flashback

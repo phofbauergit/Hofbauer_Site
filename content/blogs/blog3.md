@@ -3,7 +3,7 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:26:13-05:00"
-description: Politics
+description: Just sooo much politics
 draft: false
 image: g7.jpg
 keywords: ""
