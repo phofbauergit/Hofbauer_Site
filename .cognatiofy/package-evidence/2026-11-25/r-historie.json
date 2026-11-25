@@ -1,0 +1,47 @@
+{
+  "head": "db2fe91dea4b7de976b6d65f5a0c02b2c206972d",
+  "branches": [
+    "main"
+  ],
+  "commits": 15,
+  "history_lock_or_session_files": [],
+  "documents_scanned_at_head": 49,
+  "session_hits": [],
+  "declared_packages": [
+    "DBI",
+    "RSelenium",
+    "arrow",
+    "blogdown",
+    "countrycode",
+    "dbplyr",
+    "ggrepel",
+    "here",
+    "janitor",
+    "patchwork",
+    "readxl",
+    "robotstxt",
+    "rvest",
+    "scales",
+    "sf",
+    "skimr",
+    "stringr",
+    "tictoc",
+    "tidyverse",
+    "wbstats"
+  ],
+  "cache_headers": [
+    {
+      "path": "blogdown/blogs/risk_return_cache/html/calculate_returns_bfb095237bfd9399357bca3c52d3b33e.RData",
+      "writer_R_version": "4.3.0"
+    },
+    {
+      "path": "blogdown/blogs/risk_return_cache/html/get_price_data_642ed8de1f4e512b1a143e9f9cb5599e.RData",
+      "writer_R_version": "4.3.0"
+    }
+  ],
+  "github_actions_artifact_count": 0,
+  "github_actions_run_count": 0,
+  "github_release_tags": [],
+  "history_text_blobs_scanned": 35,
+  "history_text_indicators": []
+}
